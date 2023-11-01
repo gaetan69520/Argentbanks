@@ -33,6 +33,7 @@ paths:
           description: Invalid Fields
         "500":
           description: Internal Server Error
+
   /user/signup:
     post:
       tags:
@@ -57,6 +58,7 @@ paths:
           description: Invalid Fields
         "500":
           description: Internal Server Error
+
   /user/profile:
     post:
       security:
@@ -65,8 +67,6 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      #produces:
-      # - application/json
       responses:
         "200":
           description: User profile retrieved successfully
@@ -81,8 +81,8 @@ paths:
         - Bearer: []
       tags:
         - User Module
-      summary: User Profile API
-      description: API for updating a user profile
+      summary: Update a specific transaction
+      description: API to update a specific transaction
       parameters:
         - in: body
           name: body
@@ -101,7 +101,8 @@ paths:
           description: Invalid Fields
         "500":
           description: Internal Server Error
-  /transactions/monthly:
+
+  /transactions:
     get:
       security:
         - Bearer: []
@@ -114,12 +115,17 @@ paths:
           in: query
           description: Year
           type: integer
-          required: true
+          required: false
         - name: month
           in: query
           description: Month
           type: integer
+          required: false
+        - name: body
+          in: body
           required: true
+          schema:
+            $ref: "#/definitions/TransactionSpecific"
       produces:
         - application/json
       responses:
@@ -142,10 +148,17 @@ paths:
       description: API to retrieve a specific transaction
       parameters:
         - name: id
-          in: path
+          in: query
           description: Transaction ID to retrieve
-          required: true
           type: string
+          required: true
+        - name: id
+          in: body
+          description: Transaction ID to retrieve
+          type: string
+          required: true
+          schema:
+            $ref: "#/definitions/TransactionId"
       produces:
         - application/json
       responses:
@@ -166,10 +179,17 @@ paths:
       description: API to create a new transaction with a specific ID
       parameters:
         - name: id
-          in: path
+          in: query
+          description: Transaction ID
+          type: string
+          required: true
+        - name: id
+          in: body
           description: Transaction ID
           required: true
           type: string
+          schema:
+            $ref: "#/definitions/TransactionId"
       produces:
         - application/json
       responses:
@@ -190,10 +210,17 @@ paths:
       description: API to update a specific transaction
       parameters:
         - name: id
-          in: path
+          in: query
+          description: Transaction ID to update
+          type: string
+          required: true
+        - name: id
+          in: body
           description: Transaction ID to update
           required: true
           type: string
+          schema:
+            $ref: "#/definitions/TransactionId"
       produces:
         - application/json
       responses:
@@ -246,6 +273,18 @@ definitions:
       note:
         type: string
         description: Additional notes about the transaction
+      date:
+        type: string
+        description: Date of the transaction
+      description:
+        type: string
+        description: Description of the transaction
+      amount:
+        type: number
+        description: Amount of the transaction
+      balance:
+        type: number
+        description: Balance of the transaction
 
   TransactionDelete:
     type: object
@@ -260,41 +299,59 @@ definitions:
         description: An array of messages related to the transaction deletion
 
   TransactionOfMonth:
+    type: array
+    items:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Identifiant unique de la transaction
+        date:
+          type: number
+          description: Date de la transaction
+        description:
+          type: string
+          description: Description de la transaction
+        amount:
+          type: number
+          description: Montant de la transaction
+        balance:
+          type: number
+          description: Solde de la transaction
+
+  TransactionId:
     type: object
     properties:
       Id:
         type: string
-        description: Unique identifier for the transaction
-      date:
-        type: number
-        description: Date of the transaction
-      description:
-        type: string
-        description: Transaction description
-      amount:
-        type: number
-        description: Transaction amount
-      balance:
-        type: number
-        description: Transaction balance
+        description: Identifiant unique de la transaction
 
-  
+  TransactionSpecific:
+    type: object
     properties:
-      email:
-        type: string
-        description: user email
-      password:
-        type: string
-        description: user password
-      firstName:
-        type: string
-        description: user first name
-      lastName:
-        type: string
-        description: user last name
-      userName:
-        type: string
-        description: user public name
+      Year:
+        type: number
+        description: Date de la transaction
+      Month:
+        type: number
+        description: Identifiant unique de la transaction
+
+  properties:
+    email:
+      type: string
+      description: user email
+    password:
+      type: string
+      description: user password
+    firstName:
+      type: string
+      description: user first name
+    lastName:
+      type: string
+      description: user last name
+    userName:
+      type: string
+      description: user public name
   Login:
     properties:
       email:
